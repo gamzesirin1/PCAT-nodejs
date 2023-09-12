@@ -1,4 +1,5 @@
 const express = require('express');
+const esj = require('ejs');
 const path = require('path');
 const app = express();
 const myLogger = (req, res, next) => {
@@ -9,11 +10,19 @@ const myLogger2 = (req, res, next) => {
   console.log('Middleware Log 2');
   next();
 };
+app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(myLogger);
 app.use(myLogger2);
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/temp/index.html');
+  res.render('index');
+});
+app.get('/about', (req, res) => {
+  res.render('about');
+});
+
+app.get('/add', (req, res) => {
+  res.render('add');
 });
 
 const port = 3000;
