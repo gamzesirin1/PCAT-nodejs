@@ -2,6 +2,12 @@ const express = require('express');
 const esj = require('ejs');
 const path = require('path');
 const app = express();
+const Photo = require('./models/Photo');
+const dotenv = require('dotenv');
+const db = require('./config/db');
+
+dotenv.config();
+
 const myLogger = (req, res, next) => {
   console.log('Middleware Log 1');
   next();
@@ -12,10 +18,16 @@ const myLogger2 = (req, res, next) => {
 };
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(myLogger);
 app.use(myLogger2);
-app.get('/', (req, res) => {
-  res.render('index');
+
+app.get('/', async (req, res) => {
+  const photos = await Photo.find({});
+  res.render('index', {
+    photos,
+  });
 });
 app.get('/about', (req, res) => {
   res.render('about');
@@ -24,8 +36,16 @@ app.get('/about', (req, res) => {
 app.get('/add', (req, res) => {
   res.render('add');
 });
+app.post('/photos', async (req, res) => {
+  // async - await yapısı kullanacğız.
+  await Photo.create(req.body); // body bilgisini Photo modeli sayesinde veritabanında dökümana dönüştürüyoruz.
+  res.redirect('/');
+});
 
-const port = 3000;
-app.listen(port, () => {
-  console.log(`Sunucu ${port} portunda başlatıldı.`);
+const PORT = process.env.PORT || 5000;
+
+db();
+
+app.listen(PORT, () => {
+  console.log(`Sunucu ${PORT} portunda başlatıldı.`);
 });
