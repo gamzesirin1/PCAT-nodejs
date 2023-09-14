@@ -23,7 +23,7 @@
 					<div class="row mt-3 pb-3">
 						<div class="col-12">
 							<div class="mx-auto tm-about-text-container px-3">
-								<h2 class="tm-page-title mb-4 tm-text-primary">Add New Photo</h2>
+								<h2 class="tm-page-title mb-4 tm-text-primary">Edit The Photo</h2>
                                 <p>
                                     Lorem, ipsum dolor sit amet consectetur adipisicing elit. Neque excepturi aliquam optio minima sint ducimus! Consequuntur doloribus beatae quas accusamus inventore animi ipsa similique harum ea nam. Accusantium, expedita totam.
                                 </p>
@@ -34,23 +34,20 @@
                     <div class="mx-auto pb-3 tm-about-text-container px-3">
                         <div class="row">
                             <div class="offset-1 col-lg-10 mb-5">
-                                <form class="tm-contact-form" method="POST" action="/photos" encType="multipart/form-data">
+                                <form class="tm-contact-form" method="POST" action="/photos/<%= photo._id %>?_method=PUT" encType="multipart/form-data">
                                 
                                   <div class="form-group">
-                                    <input type="text" name="title" class="form-control rounded-0" placeholder="Photo Title" required="">
+                                    <input type="text" name="title" value="<%= photo.title %>" class="form-control rounded-0" placeholder="Photo Title" required="">
                                   </div>
                                   
                                   
                                   <div class="form-group">
-                                    <textarea rows="8" name="description" class="form-control rounded-0" placeholder="Photo Description"
-                                              required=""></textarea>
+                                    <textarea rows="8" name="description"  class="form-control rounded-0" placeholder="Photo Description"
+                                              required=""><%= photo.description %></textarea>
                                   </div>
-                                  <div class="form-group">
-                                    <input type="file" name="image" class="form-control-image rounded-0" >
-                                  </div>
-                                  
+                                
                                   <div class="form-group mb-0">
-                                    <button type="submit" class="btn btn-primary rounded-0 d-block ml-auto mr-0 tm-btn-animate tm-btn-submit tm-icon-submit"><span>Submit</span></button>
+                                    <button type="submit" class="btn btn-primary rounded-0 d-block ml-auto mr-0 tm-btn-animate tm-btn-submit tm-icon-submit"><span>update</span></button>
                                   </div>
                                 </form>    
                             </div>
