@@ -3,89 +3,45 @@ const mongoose = require('mongoose');
 const fileUpload = require('express-fileupload');
 const methodOverride = require('method-override');
 const esj = require('ejs');
-const path = require('path');
-const fs = require('fs');
 const app = express();
-const Photo = require('./models/Photo');
 const dotenv = require('dotenv');
 const db = require('./config/db');
-
+const photoContollers = require('./controllers/photoControllers');
+const pageContollers = require('./controllers/pageControllers');
 dotenv.config();
 
 const myLogger = (req, res, next) => {
   console.log('Middleware Log 1');
   next();
 };
+
 const myLogger2 = (req, res, next) => {
   console.log('Middleware Log 2');
   next();
 };
+
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
 app.use(fileUpload());
 app.use(methodOverride('_method'));
 
 app.use(myLogger);
 app.use(myLogger2);
 
-app.get('/', async (req, res) => {
-  const photos = await Photo.find({}).sort('-dateCreated');
-  res.render('index', {
-    photos,
-  });
-});
-app.get('/photos/:id', async (req, res) => {
-  // console.log(req.params.id);
-  const photo = await Photo.findById(req.params.id);
-  res.render('photo', {
-    photo,
-  });
-});
-app.get('/about', (req, res) => {
-  res.render('about');
-});
+app.get('/', photoContollers.getAllPhotos);
+app.get('/photos/:id', photoContollers.getPhoto);
+app.post('/photos', photoContollers.createPhoto);
+app.put('/photos/:id', photoContollers.updatePhoto);
+app.get('/photos/delete/:id', photoContollers.deletePhoto);
 
-app.get('/add', (req, res) => {
-  res.render('add');
-});
-app.post('/photos', async (req, res) => {
-  // console.log(req.files.image);
-  // async - await yapısı kullanacğız.
-  // await Photo.create(req.body); // body bilgisini Photo modeli sayesinde veritabanında dökümana dönüştürüyoruz.
-  // res.redirect('/');
-  const uploadDir = 'public/uploads';
+app.get('/about', pageContollers.getAboutPage);
 
-  if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir);
-  }
+app.get('/add', pageContollers.getAddPage);
 
-  let uploadImage = req.files.image;
-  let uploadPath = __dirname + '/public/uploads/' + uploadImage.name;
-
-  uploadImage.mv(uploadPath, async () => {
-    await Photo.create({
-      ...req.body,
-      image: '/uploads/' + uploadImage.name,
-    });
-    res.redirect('/');
-  });
-});
-
-app.get('/photos/edit/:id', async (req, res) => {
-  const photo = await Photo.findOne({ _id: req.params.id });
-  res.render('edit', {
-    photo,
-  });
-});
-app.put('/photos/:id', async (req, res) => {
-  const photo = await Photo.findOne({ _id: req.params.id });
-  photo.title = req.body.title;
-  photo.description = req.body.description;
-  photo.save();
-  res.redirect(`/photos/${req.params.id}`);
-});
+app.get('/photos/edit/:id', pageContollers.getEditPage);
 
 const PORT = process.env.PORT || 5000;
 

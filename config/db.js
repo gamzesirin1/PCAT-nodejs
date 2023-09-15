@@ -6,6 +6,7 @@ const db = async () => {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     })
+
     .then(() => {
       console.log('MongoDB bağlantısı başarılı.');
     })
