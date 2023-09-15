@@ -2,10 +2,18 @@ const Photo = require('../models/Photo');
 const fs = require('fs');
 
 exports.getAllPhotos = async (req, res) => {
-  const photos = await Photo.find({}).sort('-dateCreated');
-  res.render('index', {
-    photos,
-  });
+  // const photos = await Photo.find({}).sort('-dateCreated');
+  // res.render('index', {
+  //   photos,
+  // });
+  const page = req.query.page || 1; // Başlangıç sayfamız veya ilk sayfamız.
+  const photosPerPage = 3; // Her sayfada bulunan fotoğraf sayısı
+  const totalPhotos = await Photo.find().countDocuments(); // Toplam fotoğraf sayısı
+
+  const photos = await Photo.find({}) // Fotoğrafları alıyoruz
+    .sort('-dateCreated') // Fotoğrafları sıralıyoruz
+    .skip((page - 1) * photosPerPage) // Her sayfanın kendi fotoğrafları
+    .limit(photosPerPage); // Her sayfada olmasını istediğimi F. sayısını sınırlıyoruz.
 };
 
 exports.getPhoto = async (req, res) => {
